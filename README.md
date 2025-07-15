@@ -1,5 +1,5 @@
 # .zip to .adx converter
-This repository was mainly made for (AstroDX)[https://github.com/2394425147/astrodx] charts to be convertible without installing another file manager and converting it manually.
+This repository was mainly made for [AstroDX](https://github.com/2394425147/astrodx) charts to be convertible without installing another file manager and converting it manually.
 
 ## Disclaimer
 
