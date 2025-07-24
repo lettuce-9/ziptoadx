@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>.zip to .adx Converter</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 3em auto;
+      text-align: center;
+    }
+    input, button {
+      margin-top: 1em;
+      padding: 0.5em;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>.zip to .adx Converter</h1>
+  <p>Select a <strong>.zip</strong> file to convert it into an <strong>.adx</strong> chart.</p>
+  <form id="uploadForm">
+    <input type="file" id="zipFile" accept=".zip" required>
+    <br>
+    <button type="submit">Convert</button>
+  </form>
+  <p id="status"></p>
+
+<script>
+  const form = document.getElementById("uploadForm");
+  const statusText = document.getElementById("status");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fileInput = document.getElementById("zipFile");
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    statusText.textContent = "Converting...";
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("https://your-render-url.onrender.com/convert", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!res.ok) throw new Error("Failed to convert");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const baseName = file.name.replace(/\.zip$/i, '');
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${baseName}.adx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      statusText.textContent = `Downloaded ${baseName}.adx successfully.`;
+    } catch (err) {
+      statusText.textContent = "Error: " + err.message;
+    }
+  });
+</script>
+</body>
+</html>
