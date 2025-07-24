@@ -15,57 +15,85 @@
       padding: 0.5em;
       font-size: 1em;
     }
+    #version {
+      color: gray;
+      margin-top: -0.5em;
+      margin-bottom: 1em;
+      font-size: 0.9em;
+    }
+    #status {
+      margin-top: 1em;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h1>.zip to .adx Converter</h1>
+  <div id="version">v.1.1.a</div>
+
   <p>Select a <strong>.zip</strong> file to convert it into an <strong>.adx</strong> chart.</p>
+  
   <form id="uploadForm">
     <input type="file" id="zipFile" accept=".zip" required>
     <br>
     <button type="submit">Convert</button>
   </form>
+  
   <p id="status"></p>
 
-<script>
-  const form = document.getElementById("uploadForm");
-  const statusText = document.getElementById("status");
+  <script>
+    const form = document.getElementById("uploadForm");
+    const statusText = document.getElementById("status");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const fileInput = document.getElementById("zipFile");
-    const file = fileInput.files[0];
-    if (!file) return;
+      const fileInput = document.getElementById("zipFile");
+      const file = fileInput.files[0];
+      if (!file) return;
 
-    statusText.textContent = "Converting...";
+      statusText.textContent = "Converting...";
 
-    const formData = new FormData();
-    formData.append("file", file);
+      const formData = new FormData();
+      formData.append("file", file);
 
+<<<<<<< HEAD
     try {
       const res = await fetch("https://ziptoadxbacknd.onrender.com/convert", {
         method: "POST",
         body: formData
       });
+=======
+      try {
+        const res = await fetch("https://ziptoadxbacknd.onrender.com/convert", {
+          method: "POST",
+          body: formData
+        });
+>>>>>>> 0374697 (Update index.html with error handling and version)
 
-      if (!res.ok) throw new Error("Failed to convert");
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status} ${res.statusText}`);
+        }
 
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
 
-      const baseName = file.name.replace(/\.zip$/i, '');
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${baseName}.adx`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+        const baseName = file.name.replace(/\.zip$/i, '');
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${baseName}.adx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
 
-      statusText.textContent = `Downloaded ${baseName}.adx successfully.`;
-    } catch (err) {
-      statusText.textContent = "Error: " + err.message;
-    }
-  });
-</script>
+        statusText.textContent = `Downloaded ${baseName}.adx successfully.`;
+      } catch (err) {
+        if (err.message.includes("Failed to fetch")) {
+          statusText.textContent = "Error: Could not connect to backend. Make sure the server is running.";
+        } else {
+          statusText.textContent = `Error: ${err.message}`;
+        }
+      }
+    });
+  </script>
 </body>
 </html>
